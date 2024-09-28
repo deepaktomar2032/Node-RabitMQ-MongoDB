@@ -12,9 +12,13 @@
     "clean": "rm -rf build",
     "copy:yml": "cp ./docs/swagger/swagger.yml ./build/docs/swagger",
     "build": "npm run clean && tsc && npm run copy:yml",
-    "start": "npm run build && node build/src/index.js",
-    "dev": "tsx watch src/index.ts",
-    "prepare": "husky"
+    "start:dev": "tsx watch src/index.ts",
+    "start:prod": "npm run build && node build/src/index.js",
+    "docker:stop": "docker stop $(docker ps -aq) && docker rm $(docker ps -aq)",
+    "docker:reset": "docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q) && docker volume rm $(docker volume ls -q)",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:dev-reset": "npm run docker:reset && docker compose -f docker-compose.dev.yml up --build",
+    "docker:prod": "npm run docker:stop && docker-compose up --build"
   },
   "repository": {
     "type": "git",
@@ -29,7 +33,9 @@
   "homepage": "https://github.com/deepaktomar2031/template-repository#readme",
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@types/amqplib": "^0.10.5",
     "@types/express": "^4.17.21",
+    "@types/node": "^22.6.1",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "@types/yamljs": "^0.2.34",
@@ -43,11 +49,15 @@
     "typescript-eslint": "^8.2.0"
   },
   "dependencies": {
+    "amqplib": "^0.10.4",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "module-alias": "^2.2.3",
+    "mongodb": "^5.9.2",
+    "reflect-metadata": "^0.1.13",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "typeorm": "0.3.20",
     "yamljs": "^0.3.0"
   },
   "husky": {

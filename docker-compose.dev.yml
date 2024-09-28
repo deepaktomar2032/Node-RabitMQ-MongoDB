@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  node-rabbitmq-mongodb-dev:
+    container_name: node-rabbitmq-mongodb-dev
+    build:
+      context: .
+    restart: always
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4001:4001
+    command: 'npm run start:dev'
+    environment:
+      NODE_ENV: development
+      PORT: 4001
+      DATABASE_URL: mongodb://mongo_db:27018/test_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongo_db
+    networks:
+      - proxynet
+
+  mongo_db:
+    image: mongo:6.0
+    container_name: mongo_db
+    command: mongod --port 27018
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+    ports:
+      - 27018:27018
+    networks:
+      - proxynet
+
+volumes:
+  mongo_db:
+
+networks:
+  proxynet:
+    name: custom_network
+    driver: bridge
